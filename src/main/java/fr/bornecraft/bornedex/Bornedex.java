@@ -30,6 +30,9 @@ public class Bornedex {
         ModBlocks.ITEMS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
         modEventBus.addListener(this::addCreative);
+
+        // Quêtes FTB par défaut (copiées dans config/ftbquests/quests si absent)
+        QuestInstaller.installIfMissing();
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

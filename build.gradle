@@ -27,7 +27,8 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases' }
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
 }
 
 base {
@@ -116,6 +117,12 @@ configurations {
 }
 
 dependencies {
+    // FTB Quests (required) and its own dependencies
+    implementation "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
+    runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
+    runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+    runtimeOnly "dev.architectury:architectury-neoforge:${architectury_version}"
+
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly "mezz.jei:jei-${mc_version}-common-api:${jei_version}"
