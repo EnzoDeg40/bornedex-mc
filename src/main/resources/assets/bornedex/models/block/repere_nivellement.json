@@ -1,4 +1,21 @@
 {
-  "parent": "minecraft:block/cube_all",
-  "textures": { "all": "minecraft:block/stone_bricks" }
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "bornedex:block/repere_nivellement",
+    "all": "bornedex:block/repere_nivellement"
+  },
+  "elements": [
+    {
+      "from": [5, 4, 14],
+      "to": [11, 12, 16],
+      "faces": {
+        "north": { "texture": "#all", "uv": [5, 4, 11, 12] },
+        "south": { "texture": "#all", "uv": [5, 4, 11, 12] },
+        "east":  { "texture": "#all", "uv": [14, 4, 16, 12] },
+        "west":  { "texture": "#all", "uv": [14, 4, 16, 12] },
+        "up":    { "texture": "#all", "uv": [5, 14, 11, 16] },
+        "down":  { "texture": "#all", "uv": [5, 14, 11, 16] }
+      }
+    }
+  ]
 }

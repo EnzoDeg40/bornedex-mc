@@ -1,5 +1,8 @@
 {
   "variants": {
-    "": { "model": "bornedex:block/repere_nivellement" }
+    "facing=north": { "model": "bornedex:block/repere_nivellement" },
+    "facing=south": { "model": "bornedex:block/repere_nivellement", "y": 180 },
+    "facing=east":  { "model": "bornedex:block/repere_nivellement", "y": 90 },
+    "facing=west":  { "model": "bornedex:block/repere_nivellement", "y": 270 }
   }
 }
