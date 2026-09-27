@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_spyglass": {
+      "conditions": { "items": [{ "items": "minecraft:spyglass" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": { "recipe": "bornedex:theodolite" },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [["has_spyglass", "has_the_recipe"]],
+  "rewards": { "recipes": ["bornedex:theodolite"] }
+}

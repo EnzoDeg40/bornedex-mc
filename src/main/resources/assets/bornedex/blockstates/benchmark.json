@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "bornedex:block/benchmark" },
+    "facing=south": { "model": "bornedex:block/benchmark", "y": 180 },
+    "facing=east":  { "model": "bornedex:block/benchmark", "y": 90 },
+    "facing=west":  { "model": "bornedex:block/benchmark", "y": 270 }
+  }
+}

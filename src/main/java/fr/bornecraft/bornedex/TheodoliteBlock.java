@@ -1,0 +1,203 @@
+package fr.bornecraft.bornedex;
+
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * Theodolite: tripod-mounted instrument placed on the ground. Behaves like a torch:
+ * no collision, must rest on a solid block, broken (and dropped) by water.
+ * <p>
+ * Right click: targets the nearest unengraved levelling benchmark (within {@link #RANGE},
+ * in line of sight), aims the scope at it, fires a particle laser and engraves its
+ * elevation. The scope then keeps that orientation ({@link TheodoliteBlockEntity}).
+ */
+public class TheodoliteBlock extends Block implements EntityBlock {
+    public static final MapCodec<TheodoliteBlock> CODEC = simpleCodec(TheodoliteBlock::new);
+
+    /** Advancement granted on the first survey (FTB quest task). */
+    private static final ResourceLocation FIRST_SURVEY_ADVANCEMENT =
+            ResourceLocation.fromNamespaceAndPath(Bornedex.MOD_ID, "first_survey");
+    /** Aiming range, in blocks. */
+    public static final int RANGE = 10;
+    /** Laser particle spacing: 3 per block. */
+    private static final double LASER_STEP = 1.0 / 3.0;
+    /** Scope height above the ground (the model spans 16 to 20 px). */
+    private static final double LENS_HEIGHT = 18.0 / 16.0;
+    /** Distance from the block center to the benchmark plate's front face (2 px plate against the wall). */
+    private static final double PLATE_OFFSET = 6.0 / 16.0;
+
+    // Tripod + scope (the model goes up to 20 pixels)
+    private static final VoxelShape SHAPE = Shapes.or(
+            Block.box(4.0, 0.0, 4.0, 12.0, 16.0, 12.0),
+            Block.box(6.0, 16.0, 2.0, 10.0, 20.0, 14.0));
+
+    public TheodoliteBlock(Properties properties) {
+        super(properties);
+    }
+
+    @Override
+    protected MapCodec<? extends Block> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        return SHAPE;
+    }
+
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        BlockState state = this.defaultBlockState();
+        return state.canSurvive(context.getLevel(), context.getClickedPos()) ? state : null;
+    }
+
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        return canSupportCenter(level, pos.below(), Direction.UP);
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+                                     LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+        // The theodolite drops if the block below disappears
+        if (direction == Direction.DOWN && !state.canSurvive(level, pos)) {
+            return Blocks.AIR.defaultBlockState();
+        }
+        return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TheodoliteBlockEntity(pos, state);
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                               BlockHitResult hit) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return InteractionResult.SUCCESS;
+        }
+
+        List<BenchmarkBlockEntity> candidates = findUnsurveyedBenchmarks(serverLevel, pos);
+        if (candidates.isEmpty()) {
+            boolean anyInRange = !findBenchmarks(serverLevel, pos, false).isEmpty();
+            String key = anyInRange ? "message.bornedex.theodolite.all_levelled"
+                                    : "message.bornedex.theodolite.no_benchmark";
+            player.displayClientMessage(Component.translatable(key, RANGE), true);
+            return InteractionResult.CONSUME;
+        }
+
+        Vec3 lens = Vec3.atLowerCornerOf(pos).add(0.5, LENS_HEIGHT, 0.5);
+        for (BenchmarkBlockEntity benchmark : candidates) {
+            Vec3 plate = plateCenter(benchmark);
+            if (!hasLineOfSight(serverLevel, lens, plate, benchmark.getBlockPos())) {
+                continue;
+            }
+            if (serverLevel.getBlockEntity(pos) instanceof TheodoliteBlockEntity theodolite) {
+                theodolite.aimAt(lens, plate);
+            }
+            fireLaser(serverLevel, lens, plate);
+            benchmark.survey();
+            awardFirstSurvey(serverLevel, player);
+            serverLevel.playSound(null, pos, SoundEvents.SPYGLASS_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
+            serverLevel.playSound(null, benchmark.getBlockPos(), SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 0.8f, 1.2f);
+            return InteractionResult.CONSUME;
+        }
+
+        player.displayClientMessage(Component.translatable("message.bornedex.theodolite.obstructed"), true);
+        return InteractionResult.CONSUME;
+    }
+
+    private static void awardFirstSurvey(ServerLevel level, Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        AdvancementHolder advancement = level.getServer().getAdvancements().get(FIRST_SURVEY_ADVANCEMENT);
+        if (advancement != null) {
+            serverPlayer.getAdvancements().award(advancement, "surveyed");
+        }
+    }
+
+    /** Unengraved benchmarks in range, nearest first. */
+    private static List<BenchmarkBlockEntity> findUnsurveyedBenchmarks(ServerLevel level, BlockPos origin) {
+        return findBenchmarks(level, origin, true);
+    }
+
+    private static List<BenchmarkBlockEntity> findBenchmarks(ServerLevel level, BlockPos origin, boolean unsurveyedOnly) {
+        List<BenchmarkBlockEntity> found = new ArrayList<>();
+        int rangeSq = RANGE * RANGE;
+        for (BlockPos p : BlockPos.betweenClosed(origin.offset(-RANGE, -RANGE, -RANGE), origin.offset(RANGE, RANGE, RANGE))) {
+            if (p.distSqr(origin) > rangeSq || !level.getBlockState(p).is(ModBlocks.BENCHMARK.get())) {
+                continue;
+            }
+            if (level.getBlockEntity(p) instanceof BenchmarkBlockEntity benchmark
+                    && (!unsurveyedOnly || !benchmark.hasElevation())) {
+                found.add(benchmark);
+            }
+        }
+        found.sort(Comparator.comparingDouble(b -> b.getBlockPos().distSqr(origin)));
+        return found;
+    }
+
+    /** Center of the plate's front face (where the elevation is engraved). */
+    private static Vec3 plateCenter(BenchmarkBlockEntity benchmark) {
+        Direction facing = benchmark.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
+        // The plate sits against the wall, opposite FACING; its front face looks toward FACING.
+        Vec3 center = Vec3.atCenterOf(benchmark.getBlockPos()).add(0.0, 0.5 / 16.0, 0.0);
+        return center.subtract(Vec3.atLowerCornerOf(facing.getNormal()).scale(PLATE_OFFSET));
+    }
+
+    /** True if nothing solid lies between the scope and the plate (water does not block). */
+    private static boolean hasLineOfSight(ServerLevel level, Vec3 from, Vec3 to, BlockPos target) {
+        BlockHitResult result = level.clip(new ClipContext(from, to,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
+        return result.getType() == HitResult.Type.MISS || result.getBlockPos().equals(target);
+    }
+
+    /** Line of END_ROD particles from the scope to the plate, 3 per block. */
+    private static void fireLaser(ServerLevel level, Vec3 from, Vec3 to) {
+        Vec3 delta = to.subtract(from);
+        double length = delta.length();
+        if (length < 1.0e-3) {
+            return;
+        }
+        Vec3 dir = delta.scale(1.0 / length);
+        for (double d = 0.0; d <= length; d += LASER_STEP) {
+            Vec3 p = from.add(dir.scale(d));
+            level.sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
+        }
+    }
+}

@@ -1,0 +1,168 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.147'
+    id 'me.modmuss50.mod-publish-plugin' version '2.2.1'
+    id 'idea'
+}
+
+tasks.named('wrapper', Wrapper).configure {
+    distributionType = Wrapper.DistributionType.BIN
+}
+
+version = mod_version
+group = mod_group_id
+
+sourceSets.main.resources {
+    exclude("**/*.bbmodel") // BlockBench project files
+}
+
+repositories {
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases' }
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
+}
+
+base {
+    // bornedex-neoforge-1.21.1-<version>.jar
+    archivesName = "${mod_id}-neoforge-${minecraft_version}"
+}
+
+// Mojang ships Java 21 to end users in 1.21.1, so mods should target Java 21.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.INFO
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+// 'localRuntime' dependencies are present in dev runs but never published as dependencies of this mod.
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+dependencies {
+    // FTB Quests (optional, runtime only for dev testing) and its own dependencies
+    runtimeOnly "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
+    runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
+    // SNBT API used to merge quest lang files
+    compileOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
+    runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+    runtimeOnly "dev.architectury:architectury-neoforge:${architectury_version}"
+
+    // JEI, dev runs only (same version as ATM10)
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+}
+
+// Expands ${} properties in src/main/templates (neoforge.mods.toml).
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            ftb_quests_version     : ftb_quests_version,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.named('jar', Jar) {
+    def licenseName = "LICENSE_${mod_id}"
+    from('LICENSE') {
+        rename { licenseName }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
+
+// --- Publishing (CurseForge, Modrinth, GitHub Releases) ---
+
+/** Body of the "## [<version>]" section of CHANGELOG.md. */
+String changelogFor(String version) {
+    def lines = file('CHANGELOG.md').readLines()
+    def start = lines.findIndexOf { it.startsWith("## [${version}]") }
+    if (start < 0) {
+        throw new GradleException("CHANGELOG.md has no '## [${version}]' section")
+    }
+    def body = lines.drop(start + 1).takeWhile { !it.startsWith('## [') }
+    return body.join('\n').trim()
+}
+
+publishMods {
+    file = tasks.named('jar', Jar).flatMap { it.archiveFile }
+    displayName = "${mod_name} ${mod_version}"
+    changelog = providers.provider { changelogFor(mod_version) }
+    type = mod_version.contains('alpha') ? ALPHA : mod_version.contains('beta') ? BETA : STABLE
+    modLoaders.add('neoforge')
+    // Without a CurseForge token (local runs), only simulate the upload into build/publishMods
+    dryRun = providers.environmentVariable('CURSEFORGE_TOKEN').getOrNull() == null
+
+    curseforge {
+        accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
+        projectId = curseforge_project_id
+        projectSlug = curseforge_project_slug
+        minecraftVersions.add(minecraft_version)
+        javaVersions.add(JavaVersion.VERSION_21)
+        client = true
+        server = true
+        optional('ftb-quests-forge')
+    }
+
+    if (modrinth_project_id) {
+        modrinth {
+            accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+            projectId = modrinth_project_id
+            minecraftVersions.add(minecraft_version)
+        }
+    }
+
+    github {
+        accessToken = providers.environmentVariable('GITHUB_TOKEN')
+        repository = 'EnzoDeg40/bornedex-mc'
+        commitish = 'main'
+        tagName = "v${mod_version}"
+    }
+}
