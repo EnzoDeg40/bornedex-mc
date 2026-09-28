@@ -1,5 +1,8 @@
 {
   "block.bornedex.benchmark": "Repère de nivellement",
   "itemGroup.bornedex": "Bornedex",
-  "block.bornedex.theodolite": "Théodolite"
+  "block.bornedex.theodolite": "Théodolite",
+  "message.bornedex.theodolite.no_benchmark": "Aucun repère à moins de %s blocs",
+  "message.bornedex.theodolite.all_levelled": "Tous les repères à portée ont déjà leur cote",
+  "message.bornedex.theodolite.obstructed": "La visée vers le repère est obstruée"
 }

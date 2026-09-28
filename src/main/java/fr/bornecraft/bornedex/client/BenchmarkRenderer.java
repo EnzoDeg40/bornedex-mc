@@ -37,6 +37,10 @@ public class BenchmarkRenderer implements BlockEntityRenderer<BenchmarkBlockEnti
     @Override
     public void render(BenchmarkBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        // Plaque vierge tant qu'aucun théodolite n'a gravé la cote
+        if (!blockEntity.hasElevation()) {
+            return;
+        }
         Direction facing = blockEntity.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
         String text = formatElevation(blockEntity.getElevation());
 
