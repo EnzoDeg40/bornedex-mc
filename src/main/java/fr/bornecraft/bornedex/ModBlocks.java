@@ -1,8 +1,10 @@
 package fr.bornecraft.bornedex;
 
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -24,6 +26,23 @@ public final class ModBlocks {
 
     public static final DeferredItem<BlockItem> REPERE_NIVELLEMENT_ITEM =
             ITEMS.registerSimpleBlockItem("repere_nivellement", REPERE_NIVELLEMENT);
+
+    /**
+     * Théodolite : bloc au sol se comportant comme les hautes herbes,
+     * sans collision, cassé instantanément à la main et emporté par l'eau.
+     */
+    public static final DeferredBlock<Block> THEODOLITE = BLOCKS.registerSimpleBlock("theodolite",
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.STONE)
+                    .replaceable()
+                    .noCollission()
+                    .instabreak()
+                    .sound(SoundType.STONE)
+                    .noOcclusion()
+                    .pushReaction(PushReaction.DESTROY));
+
+    public static final DeferredItem<BlockItem> THEODOLITE_ITEM =
+            ITEMS.registerSimpleBlockItem("theodolite", THEODOLITE);
 
     private ModBlocks() {}
 }

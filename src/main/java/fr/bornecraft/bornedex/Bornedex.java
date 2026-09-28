@@ -22,7 +22,10 @@ public class Bornedex {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.bornedex"))
                     .icon(() -> new ItemStack(ModBlocks.REPERE_NIVELLEMENT_ITEM.get()))
-                    .displayItems((params, output) -> output.accept(ModBlocks.REPERE_NIVELLEMENT_ITEM.get()))
+                    .displayItems((params, output) -> {
+                        output.accept(ModBlocks.REPERE_NIVELLEMENT_ITEM.get());
+                        output.accept(ModBlocks.THEODOLITE_ITEM.get());
+                    })
                     .build());
 
     public Bornedex(IEventBus modEventBus) {
@@ -38,6 +41,7 @@ public class Bornedex {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
             event.accept(ModBlocks.REPERE_NIVELLEMENT_ITEM.get());
+            event.accept(ModBlocks.THEODOLITE_ITEM.get());
         }
     }
 }
