@@ -30,5 +30,25 @@
 		}]
 		x: 0.0d
 		y: 0.0d
+	}, {
+		dependencies: ["64D0A64936CA4E6E"]
+		icon: {
+			id: "bornedex:theodolite"
+		}
+		id: "7B2E4C1D8A9F3E05"
+		rewards: [{
+			id: "5C8D1F2A6B7E4093"
+			type: "xp"
+			xp: 15
+		}]
+		shape: "hexagon"
+		size: 1.5d
+		tasks: [{
+			id: "1E9A7D3C5B2F8641"
+			item: { count: 1, id: "bornedex:theodolite" }
+			type: "item"
+		}]
+		x: 2.0d
+		y: 0.0d
 	}]
 }
