@@ -14,7 +14,7 @@ public final class ModBlocks {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Bornedex.MOD_ID);
 
     /** Repère de nivellement : plaque géodésique en pierre fixée au mur, immergeable. */
-    public static final DeferredBlock<BenchmarkBlock> REPERE_NIVELLEMENT = BLOCKS.registerBlock("repere_nivellement",
+    public static final DeferredBlock<BenchmarkBlock> BENCHMARK = BLOCKS.registerBlock("benchmark",
             BenchmarkBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
@@ -23,8 +23,8 @@ public final class ModBlocks {
                     .noOcclusion()
                     .requiresCorrectToolForDrops());
 
-    public static final DeferredItem<BlockItem> REPERE_NIVELLEMENT_ITEM =
-            ITEMS.registerSimpleBlockItem("repere_nivellement", REPERE_NIVELLEMENT);
+    public static final DeferredItem<BlockItem> BENCHMARK_ITEM =
+            ITEMS.registerSimpleBlockItem("benchmark", BENCHMARK);
 
     /**
      * Théodolite : posé au sol comme une torche, traversable, cassé instantanément

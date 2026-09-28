@@ -3,7 +3,7 @@
   "pools": [
     {
       "rolls": 1,
-      "entries": [ { "type": "minecraft:item", "name": "bornedex:repere_nivellement" } ],
+      "entries": [ { "type": "minecraft:item", "name": "bornedex:benchmark" } ],
       "conditions": [ { "condition": "minecraft:survives_explosion" } ]
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "block.bornedex.repere_nivellement": "Levelling Benchmark",
+  "block.bornedex.benchmark": "Levelling Benchmark",
   "itemGroup.bornedex": "Bornedex",
   "block.bornedex.theodolite": "Theodolite"
 }

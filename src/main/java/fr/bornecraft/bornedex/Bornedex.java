@@ -20,9 +20,9 @@ public class Bornedex {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> BORNEDEX_TAB = CREATIVE_TABS.register("bornedex",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.bornedex"))
-                    .icon(() -> new ItemStack(ModBlocks.REPERE_NIVELLEMENT_ITEM.get()))
+                    .icon(() -> new ItemStack(ModBlocks.BENCHMARK_ITEM.get()))
                     .displayItems((params, output) -> {
-                        output.accept(ModBlocks.REPERE_NIVELLEMENT_ITEM.get());
+                        output.accept(ModBlocks.BENCHMARK_ITEM.get());
                         output.accept(ModBlocks.THEODOLITE_ITEM.get());
                     })
                     .build());
