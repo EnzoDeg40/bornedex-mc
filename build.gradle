@@ -118,7 +118,7 @@ configurations {
 
 dependencies {
     // FTB Quests (required) and its own dependencies
-    implementation "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
+    runtimeOnly "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
     runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
     runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
     runtimeOnly "dev.architectury:architectury-neoforge:${architectury_version}"
@@ -158,6 +158,7 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            ftb_quests_version     : ftb_quests_version,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

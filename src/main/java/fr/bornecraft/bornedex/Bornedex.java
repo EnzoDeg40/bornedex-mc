@@ -3,11 +3,10 @@ package fr.bornecraft.bornedex;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -32,16 +31,10 @@ public class Bornedex {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.ITEMS.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
-        modEventBus.addListener(this::addCreative);
 
-        // Quêtes FTB par défaut (copiées dans config/ftbquests/quests si absent)
-        QuestInstaller.installIfMissing();
-    }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(ModBlocks.REPERE_NIVELLEMENT_ITEM.get());
-            event.accept(ModBlocks.THEODOLITE_ITEM.get());
+        // Quêtes FTB par défaut (copiées dans config/ftbquests/quests si absentes)
+        if (ModList.get().isLoaded("ftbquests")) {
+            QuestInstaller.installIfMissing();
         }
     }
 }

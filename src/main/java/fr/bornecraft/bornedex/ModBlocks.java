@@ -1,7 +1,6 @@
 package fr.bornecraft.bornedex;
 
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.PushReaction;
@@ -14,9 +13,9 @@ public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Bornedex.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Bornedex.MOD_ID);
 
-    /** Repère de nivellement : plaque géodésique fixée au mur. */
-    public static final DeferredBlock<RepereNivellementBlock> REPERE_NIVELLEMENT = BLOCKS.registerBlock("repere_nivellement",
-            RepereNivellementBlock::new,
+    /** Repère de nivellement : plaque géodésique en pierre fixée au mur, immergeable. */
+    public static final DeferredBlock<BenchmarkBlock> REPERE_NIVELLEMENT = BLOCKS.registerBlock("repere_nivellement",
+            BenchmarkBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0f, 6.0f)
@@ -28,13 +27,13 @@ public final class ModBlocks {
             ITEMS.registerSimpleBlockItem("repere_nivellement", REPERE_NIVELLEMENT);
 
     /**
-     * Théodolite : bloc au sol se comportant comme les hautes herbes,
-     * sans collision, cassé instantanément à la main et emporté par l'eau.
+     * Théodolite : posé au sol comme une torche, traversable, cassé instantanément
+     * à la main, emporté (et droppé) par l'eau.
      */
-    public static final DeferredBlock<Block> THEODOLITE = BLOCKS.registerSimpleBlock("theodolite",
+    public static final DeferredBlock<TheodoliteBlock> THEODOLITE = BLOCKS.registerBlock("theodolite",
+            TheodoliteBlock::new,
             BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
-                    .replaceable()
                     .noCollission()
                     .instabreak()
                     .sound(SoundType.STONE)

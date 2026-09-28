@@ -12,8 +12,8 @@ import java.util.List;
 
 /**
  * FTB Quests ne lit ses quêtes que depuis {@code config/ftbquests/quests}.
- * Au premier lancement, on y copie les fichiers de quêtes embarqués dans le jar.
- * Si le dossier existe déjà, on ne touche à rien (les éditions in-game sont conservées).
+ * On y copie chaque fichier de quêtes embarqué dans le jar s'il n'existe pas encore.
+ * Un fichier déjà présent n'est jamais écrasé (les éditions in-game sont conservées).
  */
 public final class QuestInstaller {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -31,23 +31,27 @@ public final class QuestInstaller {
 
     public static void installIfMissing() {
         Path target = FMLPaths.CONFIGDIR.get().resolve("ftbquests").resolve("quests");
-        if (Files.isDirectory(target)) {
-            LOGGER.debug("[Bornedex] Quest folder already present at {}, skipping install", target);
-            return;
-        }
-        LOGGER.info("[Bornedex] Installing default FTB Quests files into {}", target);
+        int installed = 0;
         for (String rel : FILES) {
+            Path out = target.resolve(rel);
+            if (Files.exists(out)) {
+                LOGGER.debug("[Bornedex] Quest file {} already present, skipping", out);
+                continue;
+            }
             try (InputStream in = QuestInstaller.class.getResourceAsStream(RESOURCE_ROOT + rel)) {
                 if (in == null) {
                     LOGGER.warn("[Bornedex] Missing bundled quest file {}", rel);
                     continue;
                 }
-                Path out = target.resolve(rel);
                 Files.createDirectories(out.getParent());
                 Files.copy(in, out);
+                installed++;
             } catch (IOException e) {
                 LOGGER.error("[Bornedex] Failed to install quest file {}", rel, e);
             }
+        }
+        if (installed > 0) {
+            LOGGER.info("[Bornedex] Installed {} default FTB Quests file(s) into {}", installed, target);
         }
     }
 }
