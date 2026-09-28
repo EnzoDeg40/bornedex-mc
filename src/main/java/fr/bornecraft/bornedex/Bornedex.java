@@ -30,6 +30,7 @@ public class Bornedex {
     public Bornedex(IEventBus modEventBus) {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.ITEMS.register(modEventBus);
+        ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
         // Quêtes FTB par défaut (copiées dans config/ftbquests/quests si absentes)

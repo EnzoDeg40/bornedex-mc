@@ -9,6 +9,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.SimpleWaterloggedBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,7 +28,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
  * d'un bloc solide, uniquement sur un mur (jamais au sol ni au plafond).
  * Peut être immergée (waterlogged) comme les escaliers.
  */
-public class BenchmarkBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock {
+public class BenchmarkBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock, EntityBlock {
     public static final MapCodec<BenchmarkBlock> CODEC = simpleCodec(BenchmarkBlock::new);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
@@ -110,6 +112,11 @@ public class BenchmarkBlock extends HorizontalDirectionalBlock implements Simple
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new BenchmarkBlockEntity(pos, state);
     }
 
     @Override
