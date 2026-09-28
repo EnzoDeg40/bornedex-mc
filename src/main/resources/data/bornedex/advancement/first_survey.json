@@ -1,0 +1,15 @@
+{
+  "display": {
+    "icon": { "id": "bornedex:theodolite" },
+    "title": { "translate": "advancements.bornedex.first_survey.title" },
+    "description": { "translate": "advancements.bornedex.first_survey.description" },
+    "background": "minecraft:textures/block/stone_bricks.png",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "surveyed": { "trigger": "minecraft:impossible" }
+  }
+}

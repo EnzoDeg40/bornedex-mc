@@ -13,5 +13,9 @@ public final class ModBlockEntities {
             BLOCK_ENTITIES.register("benchmark",
                     () -> BlockEntityType.Builder.of(BenchmarkBlockEntity::new, ModBlocks.BENCHMARK.get()).build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<TheodoliteBlockEntity>> THEODOLITE =
+            BLOCK_ENTITIES.register("theodolite",
+                    () -> BlockEntityType.Builder.of(TheodoliteBlockEntity::new, ModBlocks.THEODOLITE.get()).build(null));
+
     private ModBlockEntities() {}
 }

@@ -50,5 +50,26 @@
 		}]
 		x: 2.0d
 		y: 0.0d
+	}, {
+		dependencies: ["7B2E4C1D8A9F3E05"]
+		icon: {
+			id: "bornedex:benchmark"
+		}
+		id: "4F6A2B9C1D8E7530"
+		rewards: [{
+			id: "8D3E5F7A2C1B9064"
+			type: "xp"
+			xp: 25
+		}]
+		shape: "hexagon"
+		size: 1.5d
+		tasks: [{
+			advancement: "bornedex:first_survey"
+			criterion: ""
+			id: "6B1C8E4A3F9D2075"
+			type: "advancement"
+		}]
+		x: 4.0d
+		y: 0.0d
 	}]
 }

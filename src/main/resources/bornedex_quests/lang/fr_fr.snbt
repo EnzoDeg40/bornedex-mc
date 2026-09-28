@@ -4,4 +4,6 @@
 	quest.64D0A64936CA4E6E.title: "Votre premier repère"
 	quest.7B2E4C1D8A9F3E05.quest_desc: ["Fabriquez un Théodolite : une vitre au-dessus d'un lingot de fer, monté sur un trépied de bâtons."]
 	quest.7B2E4C1D8A9F3E05.title: "Viser juste"
+	quest.4F6A2B9C1D8E7530.quest_desc: ["Posez un Théodolite à moins de 10 blocs d'un repère vierge, en ligne de vue, et faites un clic droit dessus pour graver la cote."]
+	quest.4F6A2B9C1D8E7530.title: "Premier nivellement"
 }

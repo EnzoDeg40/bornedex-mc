@@ -4,5 +4,7 @@
   "block.bornedex.theodolite": "Theodolite",
   "message.bornedex.theodolite.no_benchmark": "No benchmark within %s blocks",
   "message.bornedex.theodolite.all_levelled": "Every benchmark in range already has its level",
-  "message.bornedex.theodolite.obstructed": "Line of sight to the benchmark is obstructed"
+  "message.bornedex.theodolite.obstructed": "Line of sight to the benchmark is obstructed",
+  "advancements.bornedex.first_survey.title": "Levelled!",
+  "advancements.bornedex.first_survey.description": "Engrave a benchmark's elevation with a theodolite"
 }

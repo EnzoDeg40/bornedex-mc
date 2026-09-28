@@ -6,12 +6,20 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
 
 @EventBusSubscriber(modid = Bornedex.MOD_ID, value = Dist.CLIENT)
 public final class BornedexClient {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.BENCHMARK.get(), BenchmarkRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.THEODOLITE.get(), TheodoliteRenderer::new);
+    }
+
+    /** La lunette n'est pas dans le blockstate : on la charge comme modèle autonome. */
+    @SubscribeEvent
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        event.register(TheodoliteRenderer.HEAD_MODEL);
     }
 
     private BornedexClient() {}

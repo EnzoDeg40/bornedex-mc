@@ -4,4 +4,6 @@
 	quest.64D0A64936CA4E6E.title: "Your first benchmark"
 	quest.7B2E4C1D8A9F3E05.quest_desc: ["Craft a Theodolite: a glass pane above an iron ingot, mounted on a tripod of sticks."]
 	quest.7B2E4C1D8A9F3E05.title: "Aim true"
+	quest.4F6A2B9C1D8E7530.quest_desc: ["Place a Theodolite within 10 blocks of a blank benchmark, in line of sight, and right-click it to engrave the elevation."]
+	quest.4F6A2B9C1D8E7530.title: "First survey"
 }

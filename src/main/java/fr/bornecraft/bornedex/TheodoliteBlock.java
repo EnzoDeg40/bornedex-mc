@@ -3,9 +3,12 @@ package fr.bornecraft.bornedex;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -18,6 +21,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -36,11 +41,15 @@ import java.util.List;
  * traversable, doit reposer sur un bloc solide, cassé (et droppé) par l'eau.
  * <p>
  * Clic droit : vise le repère de nivellement non gravé le plus proche (rayon
- * {@link #RANGE}, en ligne de vue), tire un laser de particules jusqu'à lui et grave sa cote.
+ * {@link #RANGE}, en ligne de vue), oriente la lunette vers lui, tire un laser de particules
+ * et grave sa cote. La lunette garde ensuite cette orientation ({@link TheodoliteBlockEntity}).
  */
-public class TheodoliteBlock extends Block {
+public class TheodoliteBlock extends Block implements EntityBlock {
     public static final MapCodec<TheodoliteBlock> CODEC = simpleCodec(TheodoliteBlock::new);
 
+    /** Avancée accordée au premier nivellement (tâche de la quête FTB). */
+    private static final ResourceLocation FIRST_SURVEY_ADVANCEMENT =
+            ResourceLocation.fromNamespaceAndPath(Bornedex.MOD_ID, "first_survey");
     /** Portée de visée, en blocs. */
     public static final int RANGE = 10;
     /** Espacement des particules du laser : 3 par bloc. */
@@ -91,6 +100,11 @@ public class TheodoliteBlock extends Block {
     }
 
     @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TheodoliteBlockEntity(pos, state);
+    }
+
+    @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
                                                BlockHitResult hit) {
         if (!(level instanceof ServerLevel serverLevel)) {
@@ -112,8 +126,12 @@ public class TheodoliteBlock extends Block {
             if (!hasLineOfSight(serverLevel, lens, plate, benchmark.getBlockPos())) {
                 continue;
             }
+            if (serverLevel.getBlockEntity(pos) instanceof TheodoliteBlockEntity theodolite) {
+                theodolite.aimAt(lens, plate);
+            }
             fireLaser(serverLevel, lens, plate);
             benchmark.survey();
+            awardFirstSurvey(serverLevel, player);
             serverLevel.playSound(null, pos, SoundEvents.SPYGLASS_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
             serverLevel.playSound(null, benchmark.getBlockPos(), SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 0.8f, 1.2f);
             return InteractionResult.CONSUME;
@@ -121,6 +139,16 @@ public class TheodoliteBlock extends Block {
 
         player.displayClientMessage(Component.translatable("message.bornedex.theodolite.obstructed"), true);
         return InteractionResult.CONSUME;
+    }
+
+    private static void awardFirstSurvey(ServerLevel level, Player player) {
+        if (!(player instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        AdvancementHolder advancement = level.getServer().getAdvancements().get(FIRST_SURVEY_ADVANCEMENT);
+        if (advancement != null) {
+            serverPlayer.getAdvancements().award(advancement, "surveyed");
+        }
     }
 
     /** Repères non gravés à portée, du plus proche au plus éloigné. */

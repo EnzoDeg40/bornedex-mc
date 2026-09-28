@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "bornedex:block/theodolite"
+      "model": "bornedex:block/theodolite_tripod"
     }
   }
 }
