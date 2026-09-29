@@ -1,19 +1,25 @@
 modLoader="javafml"
 loaderVersion="${loader_version_range}"
 license="${mod_license}"
+issueTrackerURL="https://github.com/EnzoDeg40/bornedex-mc/issues"
 
 [[mods]]
 modId="${mod_id}"
 version="${mod_version}"
 displayName="${mod_name}"
+logoFile="logo.png"
+logoBlur=false
+authors="Enzo Degraeve"
+displayURL="https://github.com/EnzoDeg40/bornedex-mc"
 description='''
-Bornedex - reperes et bornes pour Bornecraft.
+Surveying for Minecraft: place levelling benchmarks on walls, then use a tripod-mounted theodolite to engrave their elevation relative to sea level.
+Ships an optional FTB Quests chapter (English and French).
 '''
 
 [[dependencies.${mod_id}]]
     modId="neoforge"
     type="required"
-    versionRange="[${neo_version},)"
+    versionRange="[21.1,)"
     ordering="NONE"
     side="BOTH"
 

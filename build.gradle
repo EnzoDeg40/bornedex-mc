@@ -118,7 +118,7 @@ configurations {
 }
 
 dependencies {
-    // FTB Quests (required) and its own dependencies
+    // FTB Quests (optional, runtime only for dev testing) and its own dependencies
     runtimeOnly "dev.ftb.mods:ftb-quests-neoforge:${ftb_quests_version}"
     runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
     // SNBT API used to merge quest lang files

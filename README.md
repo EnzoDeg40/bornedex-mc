@@ -19,7 +19,10 @@ A NeoForge mod for Minecraft 1.21.1 about surveying: place levelling benchmarks 
 
 - Minecraft 1.21.1
 - NeoForge 21.1.x
-- FTB Quests (plus FTB Library and FTB Teams)
+
+Optional:
+
+- FTB Quests (plus FTB Library and FTB Teams): the quest chapter is installed only when FTB Quests is present
 
 ## Development
 
