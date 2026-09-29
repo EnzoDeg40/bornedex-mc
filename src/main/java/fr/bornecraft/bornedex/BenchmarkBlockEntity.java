@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -38,14 +39,15 @@ public class BenchmarkBlockEntity extends BlockEntity {
     }
 
     /**
-     * Grave la cote courante du bloc (Y - niveau de la mer, 63 en surface) et pousse
-     * la mise à jour aux clients. Côté serveur uniquement.
+     * Grave la cote courante du bloc (Y - niveau de la mer du générateur de la dimension)
+     * et pousse la mise à jour aux clients. Côté serveur uniquement.
      */
     public void survey() {
-        if (this.level == null || this.hasElevation()) {
+        if (!(this.level instanceof ServerLevel serverLevel) || this.hasElevation()) {
             return;
         }
-        this.elevation = this.worldPosition.getY() - this.level.getSeaLevel();
+        int seaLevel = serverLevel.getChunkSource().getGenerator().getSeaLevel();
+        this.elevation = this.worldPosition.getY() - seaLevel;
         this.setChanged();
         BlockState state = this.getBlockState();
         this.level.sendBlockUpdated(this.worldPosition, state, state, Block.UPDATE_ALL);
