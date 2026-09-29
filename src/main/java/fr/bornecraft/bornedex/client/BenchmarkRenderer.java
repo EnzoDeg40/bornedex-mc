@@ -12,11 +12,11 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 
 /**
- * Grave la cote sur la plaque centrale du repère (zone creuse de 6x4 pixels,
- * x 5..11, y 6..10, en retrait à z = 15 sur le modèle orienté nord).
+ * Engraves the elevation on the benchmark's central plate (6x4 pixel recess,
+ * x 5..11, y 6..10, inset at z = 15 on the north-facing model).
  */
 public class BenchmarkRenderer implements BlockEntityRenderer<BenchmarkBlockEntity> {
-    /** Hauteur de police 9 px * échelle = 3 pixels de texture. */
+    /** Font height 9 px * scale = 3 texture pixels. */
     private static final float SCALE = 3.0f / 16.0f / 9.0f;
     private static final int TEXT_COLOR = FastColor.ARGB32.color(255, 210, 210, 210);
 
@@ -27,8 +27,8 @@ public class BenchmarkRenderer implements BlockEntityRenderer<BenchmarkBlockEnti
     }
 
     /**
-     * Le moins ASCII fait 5 px de large dans la police vanilla ; le trait d'union U+2010
-     * n'en fait que 3, à la même hauteur, ce qui garde la cote négative compacte.
+     * The ASCII minus is 5 px wide in the vanilla font; the U+2010 hyphen is only 3,
+     * at the same height, which keeps negative elevations compact.
      */
     private static String formatElevation(int elevation) {
         return elevation < 0 ? "\u2010" + (-elevation) : Integer.toString(elevation);
@@ -37,7 +37,7 @@ public class BenchmarkRenderer implements BlockEntityRenderer<BenchmarkBlockEnti
     @Override
     public void render(BenchmarkBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
-        // Plaque vierge tant qu'aucun théodolite n'a gravé la cote
+        // Blank plate until a theodolite has engraved the elevation
         if (!blockEntity.hasElevation()) {
             return;
         }
@@ -45,12 +45,12 @@ public class BenchmarkRenderer implements BlockEntityRenderer<BenchmarkBlockEnti
         String text = formatElevation(blockEntity.getElevation());
 
         poseStack.pushPose();
-        // Centre du bloc, puis rotation selon l'orientation (même recette que SignRenderer)
+        // Block center, then rotate by facing (same recipe as SignRenderer)
         poseStack.translate(0.5, 0.5, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(-facing.toYRot()));
-        // Après rotation, le +z local pointe vers le joueur (face avant) et la plaque est collée au mur
-        // derrière, en -z local. Le fond de la plaque est à 15/16 du mur, soit z local = -(15/16 - 0.5) ;
-        // on avance d'un poil pour éviter le z-fighting.
+        // After rotation, local +z points toward the player (front face) and the plate sits against
+        // the wall behind, at local -z. The plate's recess is at 15/16 from the wall, i.e. local
+        // z = -(15/16 - 0.5); nudge forward slightly to avoid z-fighting.
         poseStack.translate(0.0, 0.0, -(15.0 / 16.0 - 0.5) + 0.002);
         poseStack.scale(SCALE, -SCALE, SCALE);
 

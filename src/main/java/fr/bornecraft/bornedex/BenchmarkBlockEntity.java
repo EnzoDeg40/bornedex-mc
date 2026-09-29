@@ -14,9 +14,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import javax.annotation.Nullable;
 
 /**
- * Repère de nivellement : la cote (altitude par rapport au niveau de la mer) n'est pas
- * connue à la pose. Elle est gravée par un théodolite à portée ({@link TheodoliteBlock}),
- * puis synchronisée au client pour que le renderer l'affiche.
+ * Levelling benchmark: its elevation (height above sea level) is unknown when placed.
+ * It is engraved by a theodolite in range ({@link TheodoliteBlock}), then synced to the
+ * client so the renderer can display it.
  */
 public class BenchmarkBlockEntity extends BlockEntity {
     private static final String TAG_ELEVATION = "Elevation";
@@ -28,19 +28,19 @@ public class BenchmarkBlockEntity extends BlockEntity {
         super(ModBlockEntities.BENCHMARK.get(), pos, state);
     }
 
-    /** Vrai une fois la cote gravée par un théodolite. */
+    /** True once the elevation has been engraved by a theodolite. */
     public boolean hasElevation() {
         return this.elevation != null;
     }
 
-    /** Cote gravée sur la plaque ; n'appeler que si {@link #hasElevation()}. */
+    /** Elevation engraved on the plate; only call if {@link #hasElevation()}. */
     public int getElevation() {
         return this.elevation != null ? this.elevation : 0;
     }
 
     /**
-     * Grave la cote courante du bloc (Y - niveau de la mer du générateur de la dimension)
-     * et pousse la mise à jour aux clients. Côté serveur uniquement.
+     * Engraves the block's current elevation (Y minus the dimension generator's sea level)
+     * and pushes the update to clients. Server side only.
      */
     public void survey() {
         if (!(this.level instanceof ServerLevel serverLevel) || this.hasElevation()) {
@@ -67,7 +67,7 @@ public class BenchmarkBlockEntity extends BlockEntity {
         this.elevation = tag.contains(TAG_ELEVATION) ? tag.getInt(TAG_ELEVATION) : null;
     }
 
-    // --- Synchronisation client (chargement de chunk + mise à jour ponctuelle) ---
+    // --- Client sync (chunk load + one-off update) ---
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {

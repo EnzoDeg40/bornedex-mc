@@ -24,15 +24,15 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Repère de nivellement (levelling benchmark) : plaque de 8x9x2 pixels fixée sur la face
- * d'un bloc solide, uniquement sur un mur (jamais au sol ni au plafond).
- * Peut être immergée (waterlogged) comme les escaliers.
+ * Levelling benchmark: an 8x9x2 pixel plate attached to the face of a solid block,
+ * on walls only (never on floors or ceilings).
+ * Can be waterlogged like stairs.
  */
 public class BenchmarkBlock extends HorizontalDirectionalBlock implements SimpleWaterloggedBlock, EntityBlock {
     public static final MapCodec<BenchmarkBlock> CODEC = simpleCodec(BenchmarkBlock::new);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-    // Formes alignées sur le modèle (x 4..12, y 4..13, plaque de 2 pixels collée au mur)
+    // Shapes aligned with the model (x 4..12, y 4..13, 2 pixel plate against the wall)
     private static final VoxelShape NORTH_SHAPE = Block.box(4.0, 4.0, 14.0, 12.0, 13.0, 16.0);
     private static final VoxelShape SOUTH_SHAPE = Block.box(4.0, 4.0, 0.0, 12.0, 13.0, 2.0);
     private static final VoxelShape WEST_SHAPE = Block.box(14.0, 4.0, 4.0, 16.0, 13.0, 12.0);
@@ -72,7 +72,7 @@ public class BenchmarkBlock extends HorizontalDirectionalBlock implements Simple
         BlockPos pos = context.getClickedPos();
         boolean waterlogged = level.getFluidState(pos).getType() == Fluids.WATER;
 
-        // Face cliquée en priorité, si c'est un mur
+        // Clicked face first, if it is a wall
         Direction clicked = context.getClickedFace();
         if (clicked.getAxis().isHorizontal()) {
             BlockState state = this.defaultBlockState().setValue(FACING, clicked).setValue(WATERLOGGED, waterlogged);
@@ -81,7 +81,7 @@ public class BenchmarkBlock extends HorizontalDirectionalBlock implements Simple
             }
         }
 
-        // Sinon, le mur le plus proche de la direction du regard
+        // Otherwise, the wall closest to the look direction
         for (Direction dir : context.getNearestLookingDirections()) {
             if (!dir.getAxis().isHorizontal()) {
                 continue;
@@ -107,7 +107,7 @@ public class BenchmarkBlock extends HorizontalDirectionalBlock implements Simple
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
-        // Le repère tombe si le bloc support disparaît
+        // The benchmark drops if its supporting block disappears
         if (direction == state.getValue(FACING).getOpposite() && !state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }

@@ -16,7 +16,7 @@ public final class BornedexClient {
         event.registerBlockEntityRenderer(ModBlockEntities.THEODOLITE.get(), TheodoliteRenderer::new);
     }
 
-    /** La lunette n'est pas dans le blockstate : on la charge comme modèle autonome. */
+    /** The scope is not in the blockstate, so it is loaded as a standalone model. */
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(TheodoliteRenderer.HEAD_MODEL);

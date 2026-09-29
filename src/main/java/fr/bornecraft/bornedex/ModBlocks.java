@@ -13,7 +13,7 @@ public final class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Bornedex.MOD_ID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Bornedex.MOD_ID);
 
-    /** Repère de nivellement : plaque géodésique en pierre fixée au mur, immergeable. */
+    /** Levelling benchmark: stone geodetic plate fixed to a wall, waterloggable. */
     public static final DeferredBlock<BenchmarkBlock> BENCHMARK = BLOCKS.registerBlock("benchmark",
             BenchmarkBlock::new,
             BlockBehaviour.Properties.of()
@@ -27,8 +27,8 @@ public final class ModBlocks {
             ITEMS.registerSimpleBlockItem("benchmark", BENCHMARK);
 
     /**
-     * Théodolite : posé au sol comme une torche, traversable, cassé instantanément
-     * à la main, emporté (et droppé) par l'eau.
+     * Theodolite: placed on the ground like a torch, no collision, instantly broken
+     * by hand, washed away (and dropped) by water.
      */
     public static final DeferredBlock<TheodoliteBlock> THEODOLITE = BLOCKS.registerBlock("theodolite",
             TheodoliteBlock::new,

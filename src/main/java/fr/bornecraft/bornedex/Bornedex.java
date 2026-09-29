@@ -33,7 +33,7 @@ public class Bornedex {
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
-        // Quêtes FTB par défaut (copiées dans config/ftbquests/quests si absentes)
+        // Default FTB quests (copied into config/ftbquests/quests if missing)
         if (ModList.get().isLoaded("ftbquests")) {
             QuestInstaller.installIfMissing();
         }

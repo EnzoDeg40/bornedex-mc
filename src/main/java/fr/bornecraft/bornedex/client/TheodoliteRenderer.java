@@ -15,14 +15,14 @@ import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Dessine la lunette du théodolite (modèle {@code theodolite_head}) pivotée selon
- * l'orientation mémorisée. Le trépied reste un modèle de bloc classique.
+ * Draws the theodolite scope (model {@code theodolite_head}) rotated to the stored
+ * orientation. The tripod stays a regular block model.
  */
 public class TheodoliteRenderer implements BlockEntityRenderer<TheodoliteBlockEntity> {
     public static final ModelResourceLocation HEAD_MODEL = ModelResourceLocation.standalone(
             ResourceLocation.fromNamespaceAndPath(Bornedex.MOD_ID, "block/theodolite_head"));
 
-    /** Pivot de la lunette : centre de l'élément (8, 18, 8) du modèle. */
+    /** Scope pivot: center of the model element (8, 18, 8). */
     private static final float PIVOT_Y = 18.0f / 16.0f;
 
     private final BlockRenderDispatcher blockRenderer;
@@ -38,7 +38,7 @@ public class TheodoliteRenderer implements BlockEntityRenderer<TheodoliteBlockEn
 
         poseStack.pushPose();
         poseStack.translate(0.5f, PIVOT_Y, 0.5f);
-        // Même convention que les entités : la lunette (axe +z du modèle) regarde vers (yaw, pitch)
+        // Same convention as entities: the scope (model +z axis) looks toward (yaw, pitch)
         poseStack.mulPose(Axis.YP.rotationDegrees(-blockEntity.getYaw()));
         poseStack.mulPose(Axis.XP.rotationDegrees(blockEntity.getPitch()));
         poseStack.translate(-0.5f, -PIVOT_Y, -0.5f);

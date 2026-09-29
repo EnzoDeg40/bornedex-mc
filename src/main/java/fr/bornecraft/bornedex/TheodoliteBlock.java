@@ -37,29 +37,29 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Théodolite : instrument sur trépied posé au sol. Se comporte comme une torche :
- * traversable, doit reposer sur un bloc solide, cassé (et droppé) par l'eau.
+ * Theodolite: tripod-mounted instrument placed on the ground. Behaves like a torch:
+ * no collision, must rest on a solid block, broken (and dropped) by water.
  * <p>
- * Clic droit : vise le repère de nivellement non gravé le plus proche (rayon
- * {@link #RANGE}, en ligne de vue), oriente la lunette vers lui, tire un laser de particules
- * et grave sa cote. La lunette garde ensuite cette orientation ({@link TheodoliteBlockEntity}).
+ * Right click: targets the nearest unengraved levelling benchmark (within {@link #RANGE},
+ * in line of sight), aims the scope at it, fires a particle laser and engraves its
+ * elevation. The scope then keeps that orientation ({@link TheodoliteBlockEntity}).
  */
 public class TheodoliteBlock extends Block implements EntityBlock {
     public static final MapCodec<TheodoliteBlock> CODEC = simpleCodec(TheodoliteBlock::new);
 
-    /** Avancée accordée au premier nivellement (tâche de la quête FTB). */
+    /** Advancement granted on the first survey (FTB quest task). */
     private static final ResourceLocation FIRST_SURVEY_ADVANCEMENT =
             ResourceLocation.fromNamespaceAndPath(Bornedex.MOD_ID, "first_survey");
-    /** Portée de visée, en blocs. */
+    /** Aiming range, in blocks. */
     public static final int RANGE = 10;
-    /** Espacement des particules du laser : 3 par bloc. */
+    /** Laser particle spacing: 3 per block. */
     private static final double LASER_STEP = 1.0 / 3.0;
-    /** Hauteur de la lunette au-dessus du sol (le modèle monte de 16 à 20 px). */
+    /** Scope height above the ground (the model spans 16 to 20 px). */
     private static final double LENS_HEIGHT = 18.0 / 16.0;
-    /** Distance du centre du bloc à la face avant de la plaque du repère (plaque de 2 px collée au mur). */
+    /** Distance from the block center to the benchmark plate's front face (2 px plate against the wall). */
     private static final double PLATE_OFFSET = 6.0 / 16.0;
 
-    // Trépied + lunette (le modèle monte jusqu'à 20 pixels)
+    // Tripod + scope (the model goes up to 20 pixels)
     private static final VoxelShape SHAPE = Shapes.or(
             Block.box(4.0, 0.0, 4.0, 12.0, 16.0, 12.0),
             Block.box(6.0, 16.0, 2.0, 10.0, 20.0, 14.0));
@@ -92,7 +92,7 @@ public class TheodoliteBlock extends Block implements EntityBlock {
     @Override
     protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
                                      LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
-        // Le théodolite tombe si le bloc dessous disparaît
+        // The theodolite drops if the block below disappears
         if (direction == Direction.DOWN && !state.canSurvive(level, pos)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -151,7 +151,7 @@ public class TheodoliteBlock extends Block implements EntityBlock {
         }
     }
 
-    /** Repères non gravés à portée, du plus proche au plus éloigné. */
+    /** Unengraved benchmarks in range, nearest first. */
     private static List<BenchmarkBlockEntity> findUnsurveyedBenchmarks(ServerLevel level, BlockPos origin) {
         return findBenchmarks(level, origin, true);
     }
@@ -172,22 +172,22 @@ public class TheodoliteBlock extends Block implements EntityBlock {
         return found;
     }
 
-    /** Centre de la face avant de la plaque (là où la cote est gravée). */
+    /** Center of the plate's front face (where the elevation is engraved). */
     private static Vec3 plateCenter(BenchmarkBlockEntity benchmark) {
         Direction facing = benchmark.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-        // La plaque est collée au mur, côté opposé à FACING ; sa face avant regarde vers FACING.
+        // The plate sits against the wall, opposite FACING; its front face looks toward FACING.
         Vec3 center = Vec3.atCenterOf(benchmark.getBlockPos()).add(0.0, 0.5 / 16.0, 0.0);
         return center.subtract(Vec3.atLowerCornerOf(facing.getNormal()).scale(PLATE_OFFSET));
     }
 
-    /** Vrai si rien de solide ne s'interpose entre la lunette et la plaque (l'eau ne gêne pas). */
+    /** True if nothing solid lies between the scope and the plate (water does not block). */
     private static boolean hasLineOfSight(ServerLevel level, Vec3 from, Vec3 to, BlockPos target) {
         BlockHitResult result = level.clip(new ClipContext(from, to,
                 ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         return result.getType() == HitResult.Type.MISS || result.getBlockPos().equals(target);
     }
 
-    /** Ligne de particules END_ROD de la lunette à la plaque, 3 par bloc. */
+    /** Line of END_ROD particles from the scope to the plate, 3 per block. */
     private static void fireLaser(ServerLevel level, Vec3 from, Vec3 to) {
         Vec3 delta = to.subtract(from);
         double length = delta.length();

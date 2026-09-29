@@ -15,9 +15,9 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 /**
- * Mémorise l'orientation de la lunette (azimut et inclinaison, convention vanilla :
- * yaw 0 = sud, pitch positif = vers le bas). Elle pivote d'un coup vers le dernier repère
- * visé et garde cette position : on voit que l'instrument a servi. Le bloc cassé repart à zéro.
+ * Stores the scope orientation (yaw and pitch, vanilla convention: yaw 0 = south,
+ * positive pitch = downward). It snaps toward the last targeted benchmark and keeps that
+ * position, showing the instrument has been used. Breaking the block resets it.
  */
 public class TheodoliteBlockEntity extends BlockEntity {
     private static final String TAG_YAW = "Yaw";
@@ -38,7 +38,7 @@ public class TheodoliteBlockEntity extends BlockEntity {
         return this.pitch;
     }
 
-    /** Pointe la lunette de {@code from} vers {@code to} et pousse la mise à jour aux clients. */
+    /** Aims the scope from {@code from} toward {@code to} and pushes the update to clients. */
     public void aimAt(Vec3 from, Vec3 to) {
         Vec3 d = to.subtract(from);
         double horizontal = Math.sqrt(d.x * d.x + d.z * d.z);

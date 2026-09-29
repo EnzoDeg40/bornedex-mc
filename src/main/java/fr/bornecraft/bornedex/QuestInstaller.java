@@ -11,9 +11,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * FTB Quests ne lit ses quêtes que depuis {@code config/ftbquests/quests}.
- * On y copie chaque fichier de quêtes embarqué dans le jar s'il n'existe pas encore.
- * Un fichier déjà présent n'est jamais écrasé (les éditions in-game sont conservées).
+ * FTB Quests only reads its quests from {@code config/ftbquests/quests}.
+ * Each quest file bundled in the jar is copied there if it does not exist yet.
+ * An existing file is never overwritten (in-game edits are preserved).
  */
 public final class QuestInstaller {
     private static final Logger LOGGER = LogUtils.getLogger();
