@@ -1,8 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_stone_bricks": {
-      "conditions": { "items": [{ "items": "minecraft:stone_bricks" }] },
+    "has_copper_ingot": {
+      "conditions": { "items": [{ "items": "minecraft:copper_ingot" }] },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_nugget": {
+      "conditions": { "items": [{ "items": "minecraft:iron_nugget" }] },
       "trigger": "minecraft:inventory_changed"
     },
     "has_the_recipe": {
@@ -10,6 +14,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_stone_bricks", "has_the_recipe"]],
+  "requirements": [["has_copper_ingot", "has_iron_nugget", "has_the_recipe"]],
   "rewards": { "recipes": ["bornedex:benchmark"] }
 }

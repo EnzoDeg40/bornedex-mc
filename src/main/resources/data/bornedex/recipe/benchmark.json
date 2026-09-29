@@ -2,13 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "pattern": [
-    " I ",
-    "SSS",
-    "SSS"
+    " N ",
+    "NCN",
+    " N "
   ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
-    "S": { "item": "minecraft:stone_bricks" }
+    "N": { "item": "minecraft:iron_nugget" },
+    "C": { "item": "minecraft:copper_ingot" }
   },
   "result": { "id": "bornedex:benchmark", "count": 1 }
 }
