@@ -36,6 +36,14 @@ Optional:
 
 The built jar ends up in `build/libs/`.
 
+## Releasing
+
+1. Bump `mod_version` in `gradle.properties` and add a matching `## [x.y.z]` section to `CHANGELOG.md`.
+2. Commit, then push a `v`-prefixed tag, e.g. `git tag v0.1.0 && git push origin v0.1.0`.
+3. The `Release` workflow publishes the jar to CurseForge, Modrinth (if `modrinth_project_id` is set) and GitHub Releases.
+
+Versions containing `alpha` or `beta` are published with that release type. Running `./gradlew publishMods` locally without `CURSEFORGE_TOKEN` is a dry run (output in `build/publishMods/`).
+
 ## License
 
-All Rights Reserved.
+[MIT](LICENSE)
