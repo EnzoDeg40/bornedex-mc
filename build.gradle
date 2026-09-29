@@ -29,6 +29,7 @@ sourceSets.main.resources {
 repositories {
     maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases' }
     maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
 }
 
 base {
@@ -122,6 +123,9 @@ dependencies {
     runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
     runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
     runtimeOnly "dev.architectury:architectury-neoforge:${architectury_version}"
+
+    // JEI, dev runs only (same version as ATM10); localRuntime keeps it out of the published dependencies
+    localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     // Example optional mod dependency with JEI
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
