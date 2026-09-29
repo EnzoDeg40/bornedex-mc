@@ -5,7 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -27,15 +29,18 @@ public class Bornedex {
                     })
                     .build());
 
-    public Bornedex(IEventBus modEventBus) {
+    public Bornedex(IEventBus modEventBus, ModContainer modContainer) {
         ModBlocks.BLOCKS.register(modEventBus);
         ModBlocks.ITEMS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         CREATIVE_TABS.register(modEventBus);
 
-        // Default FTB quests (copied into config/ftbquests/quests if missing)
+        // STARTUP config is loaded on registration, so it is readable right below
+        modContainer.registerConfig(ModConfig.Type.STARTUP, BornedexConfig.SPEC);
+
+        // Default FTB quests (installed once into config/ftbquests/quests)
         if (ModList.get().isLoaded("ftbquests")) {
-            QuestInstaller.installIfMissing();
+            QuestInstaller.install();
         }
     }
 }

@@ -6,7 +6,7 @@ A NeoForge mod for Minecraft 1.21.1 about surveying: place levelling benchmarks 
 
 - **Levelling Benchmark**: a small plate that attaches to the side of a solid block (walls only). Can be waterlogged.
 - **Theodolite**: a tripod-mounted instrument placed on the ground. Right-click it to target the nearest unengraved benchmark within 10 blocks and in line of sight. The scope aims at it, fires a particle laser and engraves the benchmark's elevation relative to the dimension's sea level.
-- **FTB Quests chapter**: a Bornedex quest chapter (English and French) is installed into `config/ftbquests/quests` on first launch. Existing files are never overwritten.
+- **FTB Quests chapter**: a Bornedex quest chapter (English and French) is installed into `config/ftbquests/quests` on first launch only. Existing quest files are never overwritten; in a pack that already has quests, the chapter's texts are merged into its existing lang files. Set `installDefaultQuests = false` in `config/bornedex-startup.toml` to disable the install, or delete `config/bornedex/quests_installed` to run it again.
 
 ## Recipes
 
