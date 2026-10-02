@@ -1,0 +1,15 @@
+{
+  "parent": "bornedex:first_survey",
+  "display": {
+    "icon": { "id": "minecraft:anvil" },
+    "title": { "translate": "advancements.bornedex.christening.title" },
+    "description": { "translate": "advancements.bornedex.christening.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "renamed": { "trigger": "minecraft:impossible" }
+  }
+}

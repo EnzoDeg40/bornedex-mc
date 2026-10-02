@@ -15,6 +15,8 @@ public final class ModAdvancements {
     public static final ResourceLocation FIRST_SURVEY = id("first_survey");
     /** First elevation erased with a brush. */
     public static final ResourceLocation CLEAN_SLATE = id("clean_slate");
+    /** First benchmark renamed in an anvil. */
+    public static final ResourceLocation CHRISTENING = id("christening");
 
     private ModAdvancements() {}
 

@@ -92,5 +92,26 @@
 		}]
 		x: 6.0d
 		y: 0.0d
+	}, {
+		dependencies: ["64D0A64936CA4E6E"]
+		icon: {
+			id: "minecraft:anvil"
+		}
+		id: "5E3B8D1A7C4F2960"
+		rewards: [{
+			id: "1C7E9B4D2A6F8035"
+			type: "xp"
+			xp: 10
+		}]
+		shape: "hexagon"
+		size: 1.5d
+		tasks: [{
+			advancement: "bornedex:christening"
+			criterion: ""
+			id: "7A2F6C9E3D1B5048"
+			type: "advancement"
+		}]
+		x: 0.0d
+		y: 2.0d
 	}]
 }

@@ -2,8 +2,12 @@ package fr.bornecraft.bornedex;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -18,9 +22,13 @@ import javax.annotation.Nullable;
  * Levelling benchmark: its elevation (height above sea level) is unknown when placed.
  * It is engraved by a theodolite in range ({@link TheodoliteBlock}), then synced to the
  * client so the renderer can display it. Brushing the plate erases it ({@link BenchmarkBrushing}).
+ * <p>
+ * A benchmark item renamed in an anvil gives its name to the placed benchmark (shown when the
+ * player looks at it). Breaking it drops a benchmark with the same name, but never the elevation.
  */
 public class BenchmarkBlockEntity extends BlockEntity {
     private static final String TAG_ELEVATION = "Elevation";
+    private static final String TAG_CUSTOM_NAME = "CustomName";
     /** Brush strokes (one every 10 ticks) needed to erase the elevation: about 2.5 seconds. */
     private static final int REQUIRED_BRUSHES = 5;
     /** Brushing progress is lost if the player stops for this many ticks. */
@@ -28,6 +36,8 @@ public class BenchmarkBlockEntity extends BlockEntity {
 
     @Nullable
     private Integer elevation;
+    @Nullable
+    private Component customName;
     // Brushing progress, transient like suspicious sand's
     private int brushCount;
     private long brushCountResetsAtTick;
@@ -57,6 +67,12 @@ public class BenchmarkBlockEntity extends BlockEntity {
         int seaLevel = serverLevel.getChunkSource().getGenerator().getSeaLevel();
         this.elevation = this.worldPosition.getY() - seaLevel;
         this.sync();
+    }
+
+    /** Name given in an anvil, or null if the benchmark has none (the default). */
+    @Nullable
+    public Component getCustomName() {
+        return this.customName;
     }
 
     /**
@@ -95,12 +111,39 @@ public class BenchmarkBlockEntity extends BlockEntity {
         if (this.elevation != null) {
             tag.putInt(TAG_ELEVATION, this.elevation);
         }
+        if (this.customName != null) {
+            tag.putString(TAG_CUSTOM_NAME, Component.Serializer.toJson(this.customName, registries));
+        }
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         this.elevation = tag.contains(TAG_ELEVATION) ? tag.getInt(TAG_ELEVATION) : null;
+        this.customName = tag.contains(TAG_CUSTOM_NAME, Tag.TAG_STRING)
+                ? parseCustomNameSafe(tag.getString(TAG_CUSTOM_NAME), registries)
+                : null;
+    }
+
+    // --- Item components (same as banners): the name goes from the item to the block and back ---
+
+    @Override
+    protected void applyImplicitComponents(DataComponentInput componentInput) {
+        super.applyImplicitComponents(componentInput);
+        this.customName = componentInput.get(DataComponents.CUSTOM_NAME);
+    }
+
+    @Override
+    protected void collectImplicitComponents(DataComponentMap.Builder components) {
+        super.collectImplicitComponents(components);
+        components.set(DataComponents.CUSTOM_NAME, this.customName);
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void removeComponentsFromTag(CompoundTag tag) {
+        super.removeComponentsFromTag(tag);
+        tag.remove(TAG_CUSTOM_NAME);
     }
 
     // --- Client sync (chunk load + one-off update) ---
@@ -118,7 +161,7 @@ public class BenchmarkBlockEntity extends BlockEntity {
 
     /**
      * NeoForge ignores empty update tags by default, but an empty tag is meaningful here:
-     * a benchmark whose elevation was just erased.
+     * a benchmark without a name whose elevation was just erased.
      */
     @Override
     public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet,

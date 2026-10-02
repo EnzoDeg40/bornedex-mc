@@ -8,4 +8,6 @@
 	quest.4F6A2B9C1D8E7530.title: "Premier nivellement"
 	quest.2D7F9A3E6C1B8452.quest_desc: ["Maintenez le clic droit avec un pinceau sur un repère gravé pour effacer sa cote, afin de pouvoir le niveler à nouveau."]
 	quest.2D7F9A3E6C1B8452.title: "Table rase"
+	quest.5E3B8D1A7C4F2960.quest_desc: ["Renommez un Repère de nivellement avec une enclume. Son nom apparaît au-dessus de la plaque quand vous le regardez, et il le conserve une fois cassé (mais jamais sa cote)."]
+	quest.5E3B8D1A7C4F2960.title: "Baptême"
 }

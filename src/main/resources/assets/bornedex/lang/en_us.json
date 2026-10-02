@@ -8,5 +8,7 @@
   "advancements.bornedex.first_survey.title": "Levelled!",
   "advancements.bornedex.first_survey.description": "Engrave a benchmark's elevation with a theodolite",
   "advancements.bornedex.clean_slate.title": "Clean Slate",
-  "advancements.bornedex.clean_slate.description": "Erase a benchmark's elevation with a brush"
+  "advancements.bornedex.clean_slate.description": "Erase a benchmark's elevation with a brush",
+  "advancements.bornedex.christening.title": "Christening",
+  "advancements.bornedex.christening.description": "Rename a benchmark in an anvil"
 }

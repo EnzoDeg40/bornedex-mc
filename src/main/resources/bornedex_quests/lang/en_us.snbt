@@ -8,4 +8,6 @@
 	quest.4F6A2B9C1D8E7530.title: "First survey"
 	quest.2D7F9A3E6C1B8452.quest_desc: ["Hold right-click with a brush on an engraved benchmark to erase its elevation, so it can be surveyed again."]
 	quest.2D7F9A3E6C1B8452.title: "Clean slate"
+	quest.5E3B8D1A7C4F2960.quest_desc: ["Rename a Levelling Benchmark in an anvil. Its name appears above the plate when you look at it, and it keeps the name when broken (but never its elevation)."]
+	quest.5E3B8D1A7C4F2960.title: "Christening"
 }

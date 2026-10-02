@@ -8,5 +8,7 @@
   "advancements.bornedex.first_survey.title": "Nivelé !",
   "advancements.bornedex.first_survey.description": "Gravez la cote d'un repère avec un théodolite",
   "advancements.bornedex.clean_slate.title": "Table rase",
-  "advancements.bornedex.clean_slate.description": "Effacez la cote d'un repère avec un pinceau"
+  "advancements.bornedex.clean_slate.description": "Effacez la cote d'un repère avec un pinceau",
+  "advancements.bornedex.christening.title": "Baptême",
+  "advancements.bornedex.christening.description": "Renommez un repère avec une enclume"
 }
