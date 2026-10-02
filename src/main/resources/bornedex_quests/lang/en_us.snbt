@@ -6,4 +6,6 @@
 	quest.7B2E4C1D8A9F3E05.title: "Aim true"
 	quest.4F6A2B9C1D8E7530.quest_desc: ["Place a Theodolite within 10 blocks of a blank benchmark, in line of sight, and right-click it to engrave the elevation."]
 	quest.4F6A2B9C1D8E7530.title: "First survey"
+	quest.2D7F9A3E6C1B8452.quest_desc: ["Hold right-click with a brush on an engraved benchmark to erase its elevation, so it can be surveyed again."]
+	quest.2D7F9A3E6C1B8452.title: "Clean slate"
 }

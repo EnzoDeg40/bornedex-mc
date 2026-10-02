@@ -3,12 +3,9 @@ package fr.bornecraft.bornedex;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
@@ -47,9 +44,6 @@ import java.util.List;
 public class TheodoliteBlock extends Block implements EntityBlock {
     public static final MapCodec<TheodoliteBlock> CODEC = simpleCodec(TheodoliteBlock::new);
 
-    /** Advancement granted on the first survey (FTB quest task). */
-    private static final ResourceLocation FIRST_SURVEY_ADVANCEMENT =
-            ResourceLocation.fromNamespaceAndPath(Bornedex.MOD_ID, "first_survey");
     /** Aiming range, in blocks. */
     public static final int RANGE = 10;
     /** Laser particle spacing: 3 per block. */
@@ -131,7 +125,7 @@ public class TheodoliteBlock extends Block implements EntityBlock {
             }
             fireLaser(serverLevel, lens, plate);
             benchmark.survey();
-            awardFirstSurvey(serverLevel, player);
+            ModAdvancements.award(player, ModAdvancements.FIRST_SURVEY);
             serverLevel.playSound(null, pos, SoundEvents.SPYGLASS_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
             serverLevel.playSound(null, benchmark.getBlockPos(), SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 0.8f, 1.2f);
             return InteractionResult.CONSUME;
@@ -139,16 +133,6 @@ public class TheodoliteBlock extends Block implements EntityBlock {
 
         player.displayClientMessage(Component.translatable("message.bornedex.theodolite.obstructed"), true);
         return InteractionResult.CONSUME;
-    }
-
-    private static void awardFirstSurvey(ServerLevel level, Player player) {
-        if (!(player instanceof ServerPlayer serverPlayer)) {
-            return;
-        }
-        AdvancementHolder advancement = level.getServer().getAdvancements().get(FIRST_SURVEY_ADVANCEMENT);
-        if (advancement != null) {
-            serverPlayer.getAdvancements().award(advancement, "surveyed");
-        }
     }
 
     /** Unengraved benchmarks in range, nearest first. */

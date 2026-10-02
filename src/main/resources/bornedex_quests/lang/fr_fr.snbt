@@ -6,4 +6,6 @@
 	quest.7B2E4C1D8A9F3E05.title: "Viser juste"
 	quest.4F6A2B9C1D8E7530.quest_desc: ["Posez un Théodolite à moins de 10 blocs d'un repère vierge, en ligne de vue, et faites un clic droit dessus pour graver la cote."]
 	quest.4F6A2B9C1D8E7530.title: "Premier nivellement"
+	quest.2D7F9A3E6C1B8452.quest_desc: ["Maintenez le clic droit avec un pinceau sur un repère gravé pour effacer sa cote, afin de pouvoir le niveler à nouveau."]
+	quest.2D7F9A3E6C1B8452.title: "Table rase"
 }

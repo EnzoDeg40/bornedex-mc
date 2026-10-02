@@ -6,5 +6,7 @@
   "message.bornedex.theodolite.all_levelled": "Every benchmark in range already has its level",
   "message.bornedex.theodolite.obstructed": "Line of sight to the benchmark is obstructed",
   "advancements.bornedex.first_survey.title": "Levelled!",
-  "advancements.bornedex.first_survey.description": "Engrave a benchmark's elevation with a theodolite"
+  "advancements.bornedex.first_survey.description": "Engrave a benchmark's elevation with a theodolite",
+  "advancements.bornedex.clean_slate.title": "Clean Slate",
+  "advancements.bornedex.clean_slate.description": "Erase a benchmark's elevation with a brush"
 }

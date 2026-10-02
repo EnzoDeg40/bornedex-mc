@@ -71,5 +71,26 @@
 		}]
 		x: 4.0d
 		y: 0.0d
+	}, {
+		dependencies: ["4F6A2B9C1D8E7530"]
+		icon: {
+			id: "minecraft:brush"
+		}
+		id: "2D7F9A3E6C1B8452"
+		rewards: [{
+			id: "6E1A4C8F3B2D9057"
+			type: "xp"
+			xp: 15
+		}]
+		shape: "hexagon"
+		size: 1.5d
+		tasks: [{
+			advancement: "bornedex:clean_slate"
+			criterion: ""
+			id: "3A8C5E1F7D2B6094"
+			type: "advancement"
+		}]
+		x: 6.0d
+		y: 0.0d
 	}]
 }
