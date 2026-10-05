@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 Each release section is used as-is for the CurseForge, Modrinth and GitHub release notes.
 
+## [0.4.0]
+
+- The theodolite can be triggered by redstone: each time it receives a signal, it surveys the nearest unengraved benchmark, exactly like a right-click.
+
 ## [0.3.0]
 
 - Benchmarks can be named by renaming them in an anvil. The name appears above the plate, like a name tag, while you look at it.

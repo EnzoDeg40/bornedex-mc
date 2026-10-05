@@ -22,6 +22,9 @@ import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -29,6 +32,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -40,9 +44,12 @@ import java.util.List;
  * Right click: targets the nearest unengraved levelling benchmark (within {@link #RANGE},
  * in line of sight), aims the scope at it, fires a particle laser and engraves its
  * elevation. The scope then keeps that orientation ({@link TheodoliteBlockEntity}).
+ * <p>
+ * A redstone signal does the same as a right click, once per rising edge.
  */
 public class TheodoliteBlock extends Block implements EntityBlock {
     public static final MapCodec<TheodoliteBlock> CODEC = simpleCodec(TheodoliteBlock::new);
+    public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     /** Aiming range, in blocks. */
     public static final int RANGE = 10;
@@ -60,11 +67,17 @@ public class TheodoliteBlock extends Block implements EntityBlock {
 
     public TheodoliteBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, false));
     }
 
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(POWERED);
     }
 
     @Override
@@ -74,7 +87,9 @@ public class TheodoliteBlock extends Block implements EntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState state = this.defaultBlockState();
+        // Placed against an active signal, it starts powered and waits for the next rising edge
+        BlockState state = this.defaultBlockState()
+                .setValue(POWERED, context.getLevel().hasNeighborSignal(context.getClickedPos()));
         return state.canSurvive(context.getLevel(), context.getClickedPos()) ? state : null;
     }
 
@@ -94,6 +109,19 @@ public class TheodoliteBlock extends Block implements EntityBlock {
     }
 
     @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock,
+                                   BlockPos neighborPos, boolean movedByPiston) {
+        boolean powered = level.hasNeighborSignal(pos);
+        if (powered == state.getValue(POWERED)) {
+            return;
+        }
+        level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_ALL);
+        if (powered && level instanceof ServerLevel serverLevel) {
+            survey(serverLevel, pos, null);
+        }
+    }
+
+    @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new TheodoliteBlockEntity(pos, state);
     }
@@ -104,14 +132,23 @@ public class TheodoliteBlock extends Block implements EntityBlock {
         if (!(level instanceof ServerLevel serverLevel)) {
             return InteractionResult.SUCCESS;
         }
+        survey(serverLevel, pos, player);
+        return InteractionResult.CONSUME;
+    }
 
+    /**
+     * Surveys the nearest unengraved benchmark in line of sight. {@code player} is the one
+     * operating the theodolite, or null when it is triggered by redstone: nobody then gets
+     * the failure messages nor the advancement.
+     */
+    private static void survey(ServerLevel serverLevel, BlockPos pos, @Nullable Player player) {
         List<BenchmarkBlockEntity> candidates = findUnsurveyedBenchmarks(serverLevel, pos);
         if (candidates.isEmpty()) {
             boolean anyInRange = !findBenchmarks(serverLevel, pos, false).isEmpty();
             String key = anyInRange ? "message.bornedex.theodolite.all_levelled"
                                     : "message.bornedex.theodolite.no_benchmark";
-            player.displayClientMessage(Component.translatable(key, RANGE), true);
-            return InteractionResult.CONSUME;
+            notify(player, Component.translatable(key, RANGE));
+            return;
         }
 
         Vec3 lens = Vec3.atLowerCornerOf(pos).add(0.5, LENS_HEIGHT, 0.5);
@@ -125,14 +162,21 @@ public class TheodoliteBlock extends Block implements EntityBlock {
             }
             fireLaser(serverLevel, lens, plate);
             benchmark.survey();
-            ModAdvancements.award(player, ModAdvancements.FIRST_SURVEY);
+            if (player != null) {
+                ModAdvancements.award(player, ModAdvancements.FIRST_SURVEY);
+            }
             serverLevel.playSound(null, pos, SoundEvents.SPYGLASS_USE, SoundSource.BLOCKS, 1.0f, 1.0f);
             serverLevel.playSound(null, benchmark.getBlockPos(), SoundEvents.STONE_PLACE, SoundSource.BLOCKS, 0.8f, 1.2f);
-            return InteractionResult.CONSUME;
+            return;
         }
 
-        player.displayClientMessage(Component.translatable("message.bornedex.theodolite.obstructed"), true);
-        return InteractionResult.CONSUME;
+        notify(player, Component.translatable("message.bornedex.theodolite.obstructed"));
+    }
+
+    private static void notify(@Nullable Player player, Component message) {
+        if (player != null) {
+            player.displayClientMessage(message, true);
+        }
     }
 
     /** Unengraved benchmarks in range, nearest first. */
